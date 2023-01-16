@@ -40,14 +40,19 @@ const App = () => {
       <p>
         has {votes[selected]} {votes[selected] === 1 ? 'vote' : 'votes'}
       </p>
-      <button onClick={handleClick}>New anecdote</button>
-      <button onClick={handleVote}>Vote</button>
+      <button onClick={handleClick}>next anecdote</button>
+      <button onClick={handleVote}>vote</button>
 
       <h1>Anecdote with most votes</h1>
       <p>
         {mostVotes === 0
           ? 'Please cast your first vote'
           : anecdotes[votes.indexOf(mostVotes)]}
+      </p>
+
+      <p>
+        {mostVotes !== 0 &&
+          `has ${votes[selected]} ${votes[selected] === 1 ? 'vote' : 'votes'}`}
       </p>
     </div>
   )
