@@ -11,15 +11,21 @@ function App() {
   const [shownCountry, setShownCountry] = useState(null)
   const [countryWeather, setCountryWeather] = useState(null)
 
+  const filteredCountries = countries.filter((country) =>
+    country.name.common.toLowerCase().includes(filter.toLowerCase())
+  )
+
   useEffect(() => {
     axios.get(URL).then((res) => setCountries(res.data))
   }, [])
 
   useEffect(() => {
-    if (shownCountry) {
-      getCountryWeather(shownCountry.latlng[0], shownCountry.latlng[1])
+    if (filteredCountries.length === 1) {
+      const filteredCountry = filteredCountries[0]
+      setShownCountry(filteredCountry)
+      getCountryWeather(filteredCountry.latlng[0], filteredCountry.latlng[1])
     }
-  }, [shownCountry])
+  }, [filteredCountries])
 
   const getCountryWeather = (lat, lon) => {
     axios
@@ -47,17 +53,6 @@ function App() {
 
     setShownCountry(country)
     getCountryWeather(country.latlng[0], country.latlng[1])
-  }
-
-  const filteredCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(filter.toLowerCase())
-  )
-
-  if (
-    filteredCountries.length === 1 &&
-    shownCountry.name.common !== filteredCountries[0].name.common
-  ) {
-    setShownCountry(filteredCountries[0])
   }
 
   return (

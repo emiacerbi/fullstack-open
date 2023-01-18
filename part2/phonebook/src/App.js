@@ -3,7 +3,9 @@ import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
 import { PersonForm } from './components/PersonForm'
 import axios from 'axios'
-import { updatePerson } from './services/persons'
+import { createPerson, updatePerson } from './services/persons'
+import { Notification } from './components/Notification'
+import './index.css'
 
 const BASE_URL = 'http://localhost:3001/persons'
 
@@ -12,6 +14,10 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterInput, setFilterInput] = useState('')
+  const [message, setMessage] = useState({
+    text: '',
+    isError: false,
+  })
 
   const fetchPersons = () => {
     axios
@@ -58,6 +64,12 @@ const App = () => {
         }
 
         updatePerson(duplicatedPerson.id, updatedPerson)
+
+        setMessage({
+          text: `Edited ${newName}`,
+          isError: false,
+        })
+
         fetchPersons()
         clearInputs()
         return
@@ -67,20 +79,27 @@ const App = () => {
       }
     }
 
-    setPersons([
-      ...persons,
-      {
-        name: newName,
-        number: newNumber,
-        id: Math.floor(Math.random() * 10000 + 1),
-      },
-    ])
+    createPerson({
+      name: newName,
+      number: newNumber,
+      id: Math.floor(Math.random() * 10000 + 1),
+    })
+
+    fetchPersons()
+
+    setMessage({
+      text: `Added ${newName}`,
+      isError: false,
+    })
+
     clearInputs()
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+
+      {message.text && <Notification message={message} />}
 
       <Filter
         handleFilterChange={handleFilterChange}
@@ -103,6 +122,7 @@ const App = () => {
         persons={persons}
         filterInput={filterInput}
         fetchPersons={fetchPersons}
+        setMessage={setMessage}
       />
     </div>
   )

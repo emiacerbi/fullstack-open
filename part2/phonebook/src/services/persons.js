@@ -3,17 +3,18 @@ import axios from 'axios'
 const BASE_URL = 'http://localhost:3001/persons'
 
 const deletePerson = (id) => {
-  axios
-    .delete(`${BASE_URL}/${id}`)
-    .then((res) => res.data)
-    .catch((error) => console.log(error))
+  const request = axios.delete(`${BASE_URL}/${id}`)
+  return request.then((res) => res.data)
 }
 
 const updatePerson = (id, updatedPerson) => {
-  axios
-    .put(`${BASE_URL}/${id}`, updatedPerson)
-    .then((res) => console.log(res.data))
-    .catch((error) => console.log(error))
+  const request = axios.put(`${BASE_URL}/${id}`, updatedPerson)
+  return request.then((res) => res.data)
 }
 
-export { deletePerson, updatePerson }
+const createPerson = (newPerson) => {
+  const request = axios.post(`${BASE_URL}`, newPerson)
+  return request.then((res) => res.data)
+}
+
+export { deletePerson, updatePerson, createPerson }
