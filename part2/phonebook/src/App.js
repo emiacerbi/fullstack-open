@@ -9,6 +9,9 @@ const BASE_URL = 'http://localhost:3001/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filterInput, setFilterInput] = useState('')
 
   const fetchPersons = () => {
     axios
@@ -21,9 +24,10 @@ const App = () => {
     fetchPersons()
   }, [])
 
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [filterInput, setFilterInput] = useState('')
+  const clearInputs = () => {
+    setNewName('')
+    setNewNumber('')
+  }
 
   const handleNameChange = (e) => {
     setNewName(e.target.value)
@@ -40,11 +44,7 @@ const App = () => {
   const handleAdd = (e) => {
     e.preventDefault()
 
-    const duplicatedPersons = persons.filter(
-      (person) => person.name === newName
-    )
-
-    const duplicatedPerson = duplicatedPersons[0]
+    const duplicatedPerson = persons.find(({ name }) => name === newName)
 
     if (duplicatedPerson) {
       if (
@@ -53,22 +53,29 @@ const App = () => {
         )
       ) {
         const updatedPerson = {
-          name: duplicatedPerson.name,
+          ...duplicatedPerson,
           number: newNumber,
-          id: duplicatedPerson.id,
         }
 
         updatePerson(duplicatedPerson.id, updatedPerson)
         fetchPersons()
-        setNewName('')
-        setNewNumber('')
+        clearInputs()
+        return
+      } else {
+        clearInputs()
         return
       }
     }
 
-    setPersons([...persons, { name: newName, number: newNumber }])
-    setNewName('')
-    setNewNumber('')
+    setPersons([
+      ...persons,
+      {
+        name: newName,
+        number: newNumber,
+        id: Math.floor(Math.random() * 10000 + 1),
+      },
+    ])
+    clearInputs()
   }
 
   return (
