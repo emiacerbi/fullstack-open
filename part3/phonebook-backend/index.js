@@ -1,8 +1,12 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
+const mongoose = require('mongoose')
+
 const morgan = require('morgan')
 
 app.use(express.json())
+app.use(cors())
 
 morgan.token('body', (req, res) => JSON.stringify(req.body))
 app.use(
@@ -76,7 +80,9 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  response.send(persons.concat(newPerson))
+  persons.push(newPerson)
+
+  response.send(newPerson)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -85,6 +91,12 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
+// app.delete('/api/persons/:id', (request, response) => {
+//   const id = Number(request.params.id)
+//   persons = persons.filter((person) => person.id !== id)
+//   response.status(204).end()
+// })
+
 app.get('/info', (request, response) => {
   const date = new Date()
   const message = `<p>Phonebook has info for ${persons.length} people</p> <p>${date}</p>`
@@ -92,7 +104,9 @@ app.get('/info', (request, response) => {
   response.send(message)
 })
 
-const PORT = 3001
+console.log(persons)
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
