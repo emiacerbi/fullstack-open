@@ -7,7 +7,7 @@ import { createPerson, updatePerson } from './services/persons'
 import { Notification } from './components/Notification'
 import './index.css'
 
-const BASE_URL = 'http://localhost:3001/persons'
+const BASE_URL = 'http://localhost:3001/api/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -64,14 +64,23 @@ const App = () => {
         }
 
         updatePerson(duplicatedPerson.id, updatedPerson)
+          .then(() => {
+            setMessage({
+              text: `Edited ${newName}`,
+              isError: false,
+            })
+          })
+          .catch(() => {
+            setMessage({
+              text: `Looks like you are missing an argument`,
+              isError: true,
+            })
+          })
+          .finally(() => {
+            fetchPersons()
+            clearInputs()
+          })
 
-        setMessage({
-          text: `Edited ${newName}`,
-          isError: false,
-        })
-
-        fetchPersons()
-        clearInputs()
         return
       } else {
         clearInputs()
@@ -82,17 +91,23 @@ const App = () => {
     createPerson({
       name: newName,
       number: newNumber,
-      id: Math.floor(Math.random() * 10000 + 1),
     })
-
-    fetchPersons()
-
-    setMessage({
-      text: `Added ${newName}`,
-      isError: false,
-    })
-
-    clearInputs()
+      .then(() => {
+        setMessage({
+          text: `Added ${newName}`,
+          isError: false,
+        })
+      })
+      .catch(() => {
+        setMessage({
+          text: `The name must be at least 3 characters long`,
+          isError: true,
+        })
+      })
+      .finally(() => {
+        fetchPersons()
+        clearInputs()
+      })
   }
 
   return (
