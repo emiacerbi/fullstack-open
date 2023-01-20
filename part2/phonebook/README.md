@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is my solution to the phonebook task in part 2 of the course.
 
 ## Available Scripts
 
