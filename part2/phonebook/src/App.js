@@ -70,9 +70,9 @@ const App = () => {
               isError: false,
             })
           })
-          .catch(() => {
+          .catch((error) => {
             setMessage({
-              text: `Looks like you are missing an argument`,
+              text: `${error.response.data.error}`,
               isError: true,
             })
           })
@@ -98,9 +98,9 @@ const App = () => {
           isError: false,
         })
       })
-      .catch(() => {
+      .catch((error) => {
         setMessage({
-          text: `The name must be at least 3 characters long`,
+          text: `${error.response.data.error}`,
           isError: true,
         })
       })

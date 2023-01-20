@@ -8,7 +8,8 @@ export const PersonForm = ({
   return (
     <form onSubmit={handleAdd}>
       <div>
-        name: <input value={newName} onChange={handleNameChange} />
+        name:{' '}
+        <input value={newName} minLength={3} onChange={handleNameChange} />
       </div>
       <div>
         number: <input value={newNumber} onChange={handleNumberChange} />
