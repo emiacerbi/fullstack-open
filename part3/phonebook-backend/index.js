@@ -49,19 +49,21 @@ app.get('/api/persons', (request, response) => {
   Person.find({}).then((persons) => response.json(persons))
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
 
   Person.findById(id)
-    .then((person) => response.json(person))
-    .catch((error) =>
-      response.status(404).json({
-        error,
-      })
-    )
+    .then((person) => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
 
   if (!name || !number) {
@@ -78,7 +80,7 @@ app.post('/api/persons', (request, response) => {
   person
     .save()
     .then((savedPerson) => response.json(savedPerson))
-    .catch((err) => response.status(400).json(err))
+    .catch((err) => next(err))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -131,6 +133,12 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  if (error.name === 'ValidationError') {
+    return response
+      .status(400)
+      .send({ error: 'Please use a valid number (1234-4321)' })
   }
 
   next(error)
