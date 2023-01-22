@@ -108,6 +108,23 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('editing a blog', () => {
+  test('should edit a property of blog succesfully', async () => {
+    const blogsAtStart = await blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedBlog = {
+      likes: 32,
+    }
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(updatedBlog).expect(200)
+
+    const { body } = await api.get(`/api/blogs/${blogToUpdate.id}`)
+
+    expect(body.likes).toEqual(32)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
