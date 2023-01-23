@@ -1,4 +1,6 @@
-// const blog = require('../models/blog')
+const dummy = (blogs) => {
+  return Number(blogs + 1)
+}
 
 const totalLikes = (blogs) => {
   return blogs.reduce((acc, blog) => (acc += blog.likes), 0)
@@ -53,6 +55,7 @@ const mostLikes = (blogs) => {
 }
 
 module.exports = {
+  dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
