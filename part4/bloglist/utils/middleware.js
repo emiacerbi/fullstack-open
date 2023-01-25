@@ -27,6 +27,11 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({
       error: 'token expired',
     })
+  } else if (error.name === 'TypeError') {
+    return response.status(404).json({
+      // eslint-disable-next-line quotes
+      error: "the blog that you are trying to delete doesn't exist",
+    })
   }
 
   next(error)
