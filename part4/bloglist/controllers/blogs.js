@@ -1,7 +1,5 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response, next) => {
   try {
@@ -13,10 +11,13 @@ blogsRouter.get('/', async (request, response, next) => {
 })
 
 blogsRouter.get('/:id', async (request, response, next) => {
-  const id = request.params.id
   try {
-    const blogs = await Blog.findById(id)
-    response.json(blogs)
+    const id = request.params.id
+    const blog = await Blog.findById(id)
+    if (blog) {
+      return response.json(blog)
+    }
+    return response.status(404).end()
   } catch (error) {
     next(error)
   }
@@ -24,16 +25,11 @@ blogsRouter.get('/:id', async (request, response, next) => {
 
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
-  const token = request.token
+  const user = request.user
 
   try {
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-
-    if ((!token, !decodedToken.id)) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-
-    const user = await User.findById(decodedToken.id)
+    if (!body.title || !body.url)
+      return response.status(400).json({ error: 'title or url is missing' })
 
     const blog = new Blog({
       title: body.title,
@@ -46,7 +42,7 @@ blogsRouter.post('/', async (request, response, next) => {
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-    response.json(savedBlog)
+    response.status(201).json(savedBlog)
   } catch (error) {
     next(error)
   }
@@ -54,15 +50,17 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   const id = request.params.id
-  const token = request.token
+  const user = request.user
 
   try {
-    const decodedToken = jwt.verify(token, process.env.SECRET)
     const blog = await Blog.findById(id)
 
-    if (blog && blog.user.toString() === decodedToken.id) {
+    if (blog && blog.user.toString() === user.id) {
       const deletedBlog = await Blog.findByIdAndRemove(id)
       response.status(200).json(deletedBlog)
+    } else {
+      // eslint-disable-next-line quotes
+      response.status(404).json({ error: "that blog doesn't exist" })
     }
   } catch (error) {
     next(error)

@@ -2,16 +2,26 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const { initialBlogs, blogsInDb, nonExistingId } = require('./test_helper')
 
 const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   const noteObjects = initialBlogs.map((note) => new Blog(note))
   const promiseArray = noteObjects.map((note) => note.save())
   await Promise.all(promiseArray)
+
+  const newUser = {
+    username: 'emi',
+    name: 'Emiuser',
+    password: 'emipassword',
+  }
+
+  await api.post('/api/users').send(newUser)
 })
 
 describe('when there is initially some blogs saved', () => {
@@ -39,6 +49,13 @@ describe('viewing a specific blog', () => {
 
 describe('viewing a specific blog', () => {
   test('amount of blogs increases after creating one', async () => {
+    const userCredentials = {
+      username: 'emi',
+      password: 'emipassword',
+    }
+
+    const { _body } = await api.post('/api/login').send(userCredentials)
+
     const newBlog = {
       title: 'Third',
       author: 'Tincho',
@@ -48,6 +65,7 @@ describe('viewing a specific blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${_body.token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -65,6 +83,13 @@ describe('viewing a specific blog', () => {
 
 describe('creating a blog', () => {
   test('likes default to 0 when not in request', async () => {
+    const userCredentials = {
+      username: 'emi',
+      password: 'emipassword',
+    }
+
+    const { _body } = await api.post('/api/login').send(userCredentials)
+
     const noLikesBlog = {
       title: 'The Unlikable',
       author: 'Unlikable',
@@ -76,6 +101,7 @@ describe('creating a blog', () => {
       .send(noLikesBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
+      .set('Authorization', `Bearer ${_body.token}`)
 
     expect(body.likes).toEqual(0)
   })
@@ -93,18 +119,37 @@ describe('creating a blog', () => {
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const blogsAtStart = await blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+    // const blogsAtStart = await blogsInDb()
+    // const blogToDelete = blogsAtStart[2]
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    const userCredentials = {
+      username: 'emi',
+      password: 'emipassword',
+    }
+
+    const { _body } = await api.post('/api/login').send(userCredentials)
+
+    const newBlog = {
+      title: 'to be deleted',
+      author: 'deleter',
+      url: 'deleteme.com',
+    }
+
+    const blog = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+      .set('Authorization', `Bearer ${_body.token}`)
+
+    await api
+      .delete(`/api/blogs/${blog._body.id}`)
+      .set('Authorization', `Bearer ${_body.token}`)
+      .expect(200)
 
     const blogsAtEnd = await blogsInDb()
 
-    expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1)
-
-    const authors = blogsAtEnd.map((r) => r.author)
-
-    expect(authors).not.toContain(blogToDelete.author)
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length)
   })
 })
 

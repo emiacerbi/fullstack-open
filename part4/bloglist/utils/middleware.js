@@ -1,4 +1,6 @@
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -27,11 +29,6 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({
       error: 'token expired',
     })
-  } else if (error.name === 'TypeError') {
-    return response.status(404).json({
-      // eslint-disable-next-line quotes
-      error: "the blog that you are trying to delete doesn't exist",
-    })
   }
 
   next(error)
@@ -39,9 +36,23 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
-  console.log(authorization)
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     request.token = authorization.substring(7)
+  }
+
+  next()
+}
+
+const userExtractor = async (request, response, next) => {
+  try {
+    if (request.token) {
+      const token = request.token
+      const decodedToken = jwt.verify(token, process.env.SECRET)
+      const user = await User.findById(decodedToken.id)
+      request.user = user
+    }
+  } catch (error) {
+    next(error)
   }
 
   next()
@@ -52,4 +63,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor,
 }
