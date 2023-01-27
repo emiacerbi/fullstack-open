@@ -6,8 +6,6 @@ const Login = ({ setUser, setMessage, message }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [isNotificationShowing, setIsNotificationShowing] = useState(false)
-
   const handleChange = (e, setState) => {
     setState(e.target.value)
   }
@@ -22,14 +20,16 @@ const Login = ({ setUser, setMessage, message }) => {
       setUsername('')
       setPassword('')
     } catch (error) {
-      setIsNotificationShowing(true)
       setMessage({
         text: 'Wrong credentials',
         isError: true,
       })
     } finally {
       setTimeout(() => {
-        setIsNotificationShowing(false)
+        setMessage({
+          text: '',
+          isError: false,
+        })
       }, 3000)
     }
   }
@@ -38,7 +38,7 @@ const Login = ({ setUser, setMessage, message }) => {
     <div>
       <h2>log in to application</h2>
 
-      {isNotificationShowing && <Notification message={message} />}
+      <Notification message={message} />
 
       <form onSubmit={handleSubmit}>
         <div>

@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import blogService from './services/blogs'
 import './index.css'
 import { Notification } from './components/Notification'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
+
+import { sortByLikes } from './helpers/sortByLikes'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,7 +17,7 @@ const App = () => {
     isError: false,
   })
 
-  const [isNotificationShowing, setIsNotificationShowing] = useState(false)
+  const noteFormRef = useRef()
 
   const [blogInput, setBlogInput] = useState({
     title: '',
@@ -58,7 +62,8 @@ const App = () => {
     e.preventDefault()
     try {
       const response = await blogService.create(blogInput)
-      await fetchBlogs()
+      setBlogs((prevBlogs) => prevBlogs.concat(blogInput))
+
       setBlogInput({
         title: '',
         author: '',
@@ -69,16 +74,19 @@ const App = () => {
         text: `a new blog ${response.title} added`,
         isError: false,
       })
-      setIsNotificationShowing(true)
+
+      noteFormRef.current.toggleVisibility()
     } catch (error) {
       setMessage({
         text: 'URL or Author missing',
         isError: true,
       })
-      setIsNotificationShowing(true)
     } finally {
       setTimeout(() => {
-        setIsNotificationShowing(false)
+        setMessage({
+          text: '',
+          isError: false,
+        })
       }, 3000)
     }
   }
@@ -86,47 +94,35 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <Login setUser={setUser} message={message} setMessage={setMessage} />
+        <h1>Bloglist app</h1>
+        <Togglable buttonLabel="log in">
+          <Login setUser={setUser} message={message} setMessage={setMessage} />
+        </Togglable>
       </div>
     )
   }
 
   return (
     <div>
-      <h2>blogs</h2>
+      <h1>Bloglist app</h1>
 
       <div>
         <span>{user.name} logged in</span>{' '}
         <button onClick={handleLogout}>logout</button>
       </div>
 
-      {isNotificationShowing && <Notification message={message} />}
+      <Notification message={message} />
 
-      <form onSubmit={handleCreate}>
-        <h2>create new</h2>
+      <Togglable buttonLabel="new blog" ref={noteFormRef}>
+        <BlogForm
+          handleChange={handleChange}
+          handleCreate={handleCreate}
+          blogInput={blogInput}
+        />
+      </Togglable>
 
-        <div>
-          title:
-          <input onChange={handleChange} name="title" value={blogInput.title} />
-        </div>
-        <div>
-          author:
-          <input
-            onChange={handleChange}
-            name="author"
-            value={blogInput.author}
-          />
-        </div>
-        <div>
-          url:
-          <input onChange={handleChange} name="url" value={blogInput.url} />
-        </div>
-
-        <button type="submit">create</button>
-      </form>
-
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+      {sortByLikes(blogs).map((blog) => (
+        <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
       ))}
     </div>
   )
