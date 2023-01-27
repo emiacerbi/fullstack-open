@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 const BlogForm = ({ handleCreate, handleChange, blogInput }) => {
   return (
     <form onSubmit={handleCreate}>
@@ -19,6 +21,14 @@ const BlogForm = ({ handleCreate, handleChange, blogInput }) => {
       <button type="submit">create</button>
     </form>
   )
+}
+
+BlogForm.propTypes = {
+  blogInput: PropTypes.shape({
+    title: PropTypes.string,
+    author: PropTypes.string,
+    url: PropTypes.string,
+  }),
 }
 
 export default BlogForm
