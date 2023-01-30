@@ -1,21 +1,64 @@
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
+import { useState } from 'react'
+// import { blogServices } from '../services/blogs'
 
-const BlogForm = ({ handleCreate, handleChange, blogInput }) => {
+const BlogForm = ({ createBlog }) => {
+  const [blogInput, setBlogInput] = useState({
+    title: '',
+    author: '',
+    url: '',
+  })
+
+  const handleChange = (e) => {
+    const name = e.target.name
+    const value = e.target.value
+    setBlogInput({
+      ...blogInput,
+      [name]: value,
+    })
+  }
+
+  const handleCreate = (e) => {
+    e.preventDefault()
+    createBlog(blogInput)
+
+    setBlogInput({
+      title: '',
+      author: '',
+      url: '',
+    })
+  }
+
   return (
     <form onSubmit={handleCreate}>
       <h2>create new</h2>
 
       <div>
         title:
-        <input onChange={handleChange} name="title" value={blogInput.title} />
+        <input
+          onChange={handleChange}
+          aria-label="title"
+          name="title"
+          value={blogInput.title}
+        />
       </div>
       <div>
         author:
-        <input onChange={handleChange} name="author" value={blogInput.author} />
+        <input
+          aria-label="author"
+          onChange={handleChange}
+          name="author"
+          value={blogInput.author}
+        />
       </div>
       <div>
         url:
-        <input onChange={handleChange} name="url" value={blogInput.url} />
+        <input
+          aria-label="url"
+          onChange={handleChange}
+          name="url"
+          value={blogInput.url}
+        />
       </div>
 
       <button type="submit">create</button>
@@ -23,12 +66,12 @@ const BlogForm = ({ handleCreate, handleChange, blogInput }) => {
   )
 }
 
-BlogForm.propTypes = {
-  blogInput: PropTypes.shape({
-    title: PropTypes.string,
-    author: PropTypes.string,
-    url: PropTypes.string,
-  }),
-}
+// BlogForm.propTypes = {
+//   blogInput: PropTypes.shape({
+//     title: PropTypes.string,
+//     author: PropTypes.string,
+//     url: PropTypes.string,
+//   }),
+// }
 
 export default BlogForm

@@ -1,27 +1,11 @@
 import { useState } from 'react'
+import { blogServices } from '../services/blogs'
 
-import blogServices from '../services/blogs'
-
-const Blog = ({ blog, setBlogs }) => {
+const Blog = ({ blog, handleLike, setBlogs }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   const handleClick = () => {
     setIsVisible(!isVisible)
-  }
-
-  const handleLike = async (prevLikes) => {
-    const newBlog = {
-      ...blog,
-      likes: prevLikes + 1,
-    }
-
-    const response = await blogServices.update(blog.id, newBlog)
-
-    setBlogs((prevBlogs) =>
-      prevBlogs.map((blog) =>
-        blog.id === response.id ? { ...blog, likes: blog.likes + 1 } : blog
-      )
-    )
   }
 
   const handleRemove = async (id) => {
@@ -42,7 +26,8 @@ const Blog = ({ blog, setBlogs }) => {
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title} {blog.author}
+        <span>{blog.title}</span>
+        <span> {blog.author} </span>
         <button onClick={handleClick}>{isVisible ? 'hide' : 'view'}</button>
         {isVisible && (
           <div>
@@ -51,7 +36,7 @@ const Blog = ({ blog, setBlogs }) => {
               likes {blog.likes}{' '}
               <button onClick={() => handleLike(blog.likes)}>like</button>
             </div>
-            <div>{blog.author}</div>
+            <div>{blog.author} </div>
 
             <button onClick={() => handleRemove(blog.id)}>remove</button>
           </div>

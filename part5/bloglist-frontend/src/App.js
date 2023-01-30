@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
-import blogService from './services/blogs'
+import { blogServices } from './services/blogs'
 import './index.css'
 import { Notification } from './components/Notification'
 import Togglable from './components/Togglable'
@@ -19,14 +19,8 @@ const App = () => {
 
   const noteFormRef = useRef()
 
-  const [blogInput, setBlogInput] = useState({
-    title: '',
-    author: '',
-    url: '',
-  })
-
   const fetchBlogs = async () => {
-    const blogs = await blogService.getAll()
+    const blogs = await blogServices.getAll()
     setBlogs(blogs)
   }
 
@@ -40,7 +34,7 @@ const App = () => {
     if (loggedUser) {
       const user = JSON.parse(loggedUser)
       setUser(user)
-      blogService.setToken(user.token)
+      blogServices.setToken(user.token)
     }
   }, [])
 
@@ -49,26 +43,25 @@ const App = () => {
     window.localStorage.clear()
   }
 
-  const handleChange = (e) => {
-    const name = e.target.name
-    const value = e.target.value
-    setBlogInput({
-      ...blogInput,
-      [name]: value,
-    })
+  const handleLike = async (blog) => {
+    const newBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    }
+
+    const response = await blogServices.update(blog.id, newBlog)
+
+    setBlogs((prevBlogs) =>
+      prevBlogs.map((blog) =>
+        blog.id === response.id ? { ...blog, likes: blog.likes + 1 } : blog
+      )
+    )
   }
 
-  const handleCreate = async (e) => {
-    e.preventDefault()
+  const createBlog = async (blogInput) => {
     try {
-      const response = await blogService.create(blogInput)
-      setBlogs((prevBlogs) => prevBlogs.concat(blogInput))
-
-      setBlogInput({
-        title: '',
-        author: '',
-        url: '',
-      })
+      const response = await blogServices.create(blogInput)
+      setBlogs((prevBlogs) => prevBlogs.concat(response))
 
       setMessage({
         text: `a new blog ${response.title} added`,
@@ -90,6 +83,8 @@ const App = () => {
       }, 3000)
     }
   }
+
+  console.log(blogs)
 
   if (user === null) {
     return (
@@ -115,14 +110,20 @@ const App = () => {
 
       <Togglable buttonLabel="new blog" ref={noteFormRef}>
         <BlogForm
-          handleChange={handleChange}
-          handleCreate={handleCreate}
-          blogInput={blogInput}
+          createBlog={createBlog}
+          setBlogs={setBlogs}
+          setMessage={setMessage}
+          noteFormRef={noteFormRef}
         />
       </Togglable>
 
       {sortByLikes(blogs).map((blog) => (
-        <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          setBlogs={setBlogs}
+          handleLike={() => handleLike(blog)}
+        />
       ))}
     </div>
   )
