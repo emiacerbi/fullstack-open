@@ -3,5 +3,9 @@ export const Notification = ({ message }) => {
 
   if (!message.text) return null
 
-  return <div className={`notification ${error}`}>{message.text}</div>
+  return (
+    <div id="notification" className={`notification ${error}`}>
+      {message.text}
+    </div>
+  )
 }

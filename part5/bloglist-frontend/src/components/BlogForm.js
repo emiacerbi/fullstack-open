@@ -1,6 +1,4 @@
-// import PropTypes from 'prop-types'
 import { useState } from 'react'
-// import { blogServices } from '../services/blogs'
 
 const BlogForm = ({ createBlog }) => {
   const [blogInput, setBlogInput] = useState({
@@ -61,17 +59,11 @@ const BlogForm = ({ createBlog }) => {
         />
       </div>
 
-      <button type="submit">create</button>
+      <button id="create-blog-button" type="submit">
+        create
+      </button>
     </form>
   )
 }
-
-// BlogForm.propTypes = {
-//   blogInput: PropTypes.shape({
-//     title: PropTypes.string,
-//     author: PropTypes.string,
-//     url: PropTypes.string,
-//   }),
-// }
 
 export default BlogForm

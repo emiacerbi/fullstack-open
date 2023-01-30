@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import loginService from '../services/login'
+import { blogServices } from '../services/blogs'
+import { loginServices } from '../services/login'
 import { Notification } from './Notification'
 
 const Login = ({ setUser, setMessage, message }) => {
@@ -13,8 +14,9 @@ const Login = ({ setUser, setMessage, message }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await loginService.login({ username, password })
+      const response = await loginServices.login({ username, password })
       setUser(response)
+      blogServices.setToken(response.token)
       window.localStorage.setItem('blogListUser', JSON.stringify(response))
 
       setUsername('')
@@ -43,14 +45,16 @@ const Login = ({ setUser, setMessage, message }) => {
       <form onSubmit={handleSubmit}>
         <div>
           username
-          <input onChange={(e) => handleChange(e, setUsername)} />
+          <input id="username" onChange={(e) => handleChange(e, setUsername)} />
         </div>
         <div>
           password
-          <input onChange={(e) => handleChange(e, setPassword)} />
+          <input id="password" onChange={(e) => handleChange(e, setPassword)} />
         </div>
 
-        <button type="submit">login</button>
+        <button id="login-button" type="submit">
+          login
+        </button>
       </form>
     </div>
   )

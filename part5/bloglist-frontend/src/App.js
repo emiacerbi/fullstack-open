@@ -60,6 +60,7 @@ const App = () => {
 
   const createBlog = async (blogInput) => {
     try {
+      noteFormRef.current.toggleVisibility()
       const response = await blogServices.create(blogInput)
       setBlogs((prevBlogs) => prevBlogs.concat(response))
 
@@ -67,8 +68,6 @@ const App = () => {
         text: `a new blog ${response.title} added`,
         isError: false,
       })
-
-      noteFormRef.current.toggleVisibility()
     } catch (error) {
       setMessage({
         text: 'URL or Author missing',
@@ -83,8 +82,6 @@ const App = () => {
       }, 3000)
     }
   }
-
-  console.log(blogs)
 
   if (user === null) {
     return (
@@ -113,7 +110,6 @@ const App = () => {
           createBlog={createBlog}
           setBlogs={setBlogs}
           setMessage={setMessage}
-          noteFormRef={noteFormRef}
         />
       </Togglable>
 
@@ -123,6 +119,7 @@ const App = () => {
           blog={blog}
           setBlogs={setBlogs}
           handleLike={() => handleLike(blog)}
+          setMessage={setMessage}
         />
       ))}
     </div>

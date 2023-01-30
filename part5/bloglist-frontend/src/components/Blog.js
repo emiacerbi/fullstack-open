@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { blogServices } from '../services/blogs'
 
-const Blog = ({ blog, handleLike, setBlogs }) => {
+const Blog = ({ blog, handleLike, setBlogs, setMessage }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   const handleClick = () => {
@@ -9,9 +9,21 @@ const Blog = ({ blog, handleLike, setBlogs }) => {
   }
 
   const handleRemove = async (id) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogServices.remove(id)
-      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+        const response = await blogServices.remove(id)
+        console.log(response)
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))
+        setMessage({
+          text: `${blog.title} by ${blog.author} removed succesfully`,
+          isError: false,
+        })
+      }
+    } catch (error) {
+      setMessage({
+        text: 'You are not allowed the remove this blog',
+        isError: true,
+      })
     }
   }
 
@@ -25,16 +37,20 @@ const Blog = ({ blog, handleLike, setBlogs }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className="blog">
         <span>{blog.title}</span>
         <span> {blog.author} </span>
-        <button onClick={handleClick}>{isVisible ? 'hide' : 'view'}</button>
+        <button id="view-button" onClick={handleClick}>
+          {isVisible ? 'hide' : 'view'}
+        </button>
         {isVisible && (
           <div>
             <div>{blog.url}</div>
             <div>
               likes {blog.likes}{' '}
-              <button onClick={() => handleLike(blog.likes)}>like</button>
+              <button id="like-button" onClick={() => handleLike(blog.likes)}>
+                like
+              </button>
             </div>
             <div>{blog.author} </div>
 

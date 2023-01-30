@@ -32,7 +32,7 @@ const remove = async (id) => {
   }
 
   const response = axios.delete(`${baseUrl}/${id}`, config)
-  return response.data
+  return response
 }
 
 export const blogServices = {
