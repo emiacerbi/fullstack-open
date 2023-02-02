@@ -1,12 +1,21 @@
 import { useMutation, useQueryClient } from 'react-query'
+import { useNotificationDispatch } from '../context/NotificationContext'
 import { anecdoteService } from '../services/anecdotes'
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
+  const dispatch = useNotificationDispatch()
 
   const mutation = useMutation(anecdoteService.create, {
-    onSuccess: () => {
+    onSuccess: ({ content }) => {
       queryClient.invalidateQueries('anecdotes')
+      dispatch({ type: 'SHOW', payload: `anecdote ${content} created` })
+    },
+    onError: ({ response }) => {
+      dispatch({
+        type: 'SHOW',
+        payload: response.data.error,
+      })
     },
   })
 
@@ -20,8 +29,11 @@ const AnecdoteForm = () => {
     }
 
     mutation.mutate(newAnecdote)
-
     event.target.anecdote.value = ''
+
+    setTimeout(() => {
+      dispatch({ type: 'HIDE' })
+    }, 2000)
   }
 
   return (
