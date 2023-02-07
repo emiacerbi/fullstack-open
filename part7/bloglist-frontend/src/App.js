@@ -1,30 +1,29 @@
-import { useState, useEffect, useRef } from 'react'
+import { useRef } from 'react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import Blog from './components/Blog'
 import Login from './components/Login'
-import { blogServices } from './services/blogs'
-import './index.css'
 import { Notification } from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-
+import { blogServices } from './services/blogs'
 import { sortByLikes } from './helpers/sortByLikes'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useNotificationDispatch } from './context/NotificationContext'
+import { useUserDispatch, useUserValue } from './context/UserContext'
+import './index.css'
 
 const App = () => {
-  const [user, setUser] = useState(null)
-  const [message, setMessage] = useState({
-    text: '',
-    isError: false,
-  })
-
+  const dispatch = useNotificationDispatch()
+  const userDispatch = useUserDispatch()
+  const user = useUserValue()
   const noteFormRef = useRef()
   const queryClient = useQueryClient()
+
   const { data, isLoading } = useQuery('blogs', blogServices.getAll, {
     refetchOnWindowFocus: false,
   })
 
   const updateMutation = useMutation(blogServices.update, {
-    onSuccess: (res) => {
+    onSuccess: () => {
       queryClient.invalidateQueries('blogs')
     },
   })
@@ -32,39 +31,31 @@ const App = () => {
   const createMutation = useMutation(blogServices.create, {
     onSuccess: (res) => {
       queryClient.invalidateQueries('blogs')
-      setMessage({
-        text: `a new blog ${res.title} added`,
-        isError: false,
+      dispatch({
+        type: 'SHOW',
+        payload: { text: `a new blog ${res.title} added`, isError: false },
       })
     },
-    onError: (res) => {
-      setMessage({
-        text: 'URL or Author missing',
-        isError: true,
+    onError: () => {
+      dispatch({
+        type: 'SHOW',
+        payload: {
+          text: 'URL or Author missing',
+          isError: true,
+        },
       })
     },
-    onSettled: (res) => {
+    onSettled: () => {
       setTimeout(() => {
-        setMessage({
-          text: '',
-          isError: false,
+        dispatch({
+          type: 'HIDE',
         })
       }, 3000)
     },
   })
 
-  useEffect(() => {
-    const loggedUser = window.localStorage.getItem('blogListUser')
-
-    if (loggedUser) {
-      const user = JSON.parse(loggedUser)
-      setUser(user)
-      blogServices.setToken(user.token)
-    }
-  }, [])
-
   const handleLogout = () => {
-    setUser(null)
+    userDispatch({ type: 'LOG_OUT' })
     window.localStorage.clear()
   }
 
@@ -91,7 +82,7 @@ const App = () => {
       <div>
         <h1>Bloglist app</h1>
         <Togglable buttonLabel="log in">
-          <Login setUser={setUser} message={message} setMessage={setMessage} />
+          <Login />
         </Togglable>
       </div>
     )
@@ -106,19 +97,14 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
 
-      <Notification message={message} />
+      <Notification />
 
       <Togglable buttonLabel="new blog" ref={noteFormRef}>
-        <BlogForm createBlog={createBlog} setMessage={setMessage} />
+        <BlogForm createBlog={createBlog} />
       </Togglable>
 
       {sortByLikes(data).map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          setMessage={setMessage}
-        />
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
       ))}
     </div>
   )

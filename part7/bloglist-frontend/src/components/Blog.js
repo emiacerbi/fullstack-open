@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
+import { useNotificationDispatch } from '../context/NotificationContext'
 import { blogServices } from '../services/blogs'
 
-const Blog = ({ blog, handleLike, setMessage }) => {
+const Blog = ({ blog, handleLike }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   const handleClick = () => {
     setIsVisible(!isVisible)
   }
+
+  const dispatch = useNotificationDispatch()
 
   const queryClient = useQueryClient()
 
@@ -15,22 +18,27 @@ const Blog = ({ blog, handleLike, setMessage }) => {
     onSuccess: (res) => {
       const deletedBlog = res.data
       queryClient.invalidateQueries('blogs')
-      setMessage({
-        text: `${deletedBlog.title} by ${deletedBlog.author} removed succesfully`,
-        isError: false,
+      dispatch({
+        type: 'SHOW',
+        payload: {
+          text: `${deletedBlog.title} by ${deletedBlog.author} removed succesfully`,
+          isError: false,
+        },
       })
     },
-    onError: (res) => {
-      setMessage({
-        text: 'You are not allowed to remove this blog',
-        isError: true,
+    onError: () => {
+      dispatch({
+        type: 'SHOW',
+        payload: {
+          text: 'You are not allowed to remove this blog',
+          isError: true,
+        },
       })
     },
     onSettled: () => {
       setTimeout(() => {
-        setMessage({
-          text: '',
-          isError: false,
+        dispatch({
+          type: 'HIDE',
         })
       }, 3000)
     },

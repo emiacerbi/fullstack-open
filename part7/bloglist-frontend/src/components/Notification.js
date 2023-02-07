@@ -1,11 +1,15 @@
-export const Notification = ({ message }) => {
-  const error = message.isError && 'error'
+import { useNotificationValue } from '../context/NotificationContext'
 
-  if (!message.text) return null
+export const Notification = () => {
+  const notification = useNotificationValue()
+
+  const error = notification.isError && 'error'
+
+  if (!notification.text) return null
 
   return (
     <div id="notification" className={`notification ${error}`}>
-      {message.text}
+      {notification.text}
     </div>
   )
 }

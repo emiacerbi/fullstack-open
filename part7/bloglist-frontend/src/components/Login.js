@@ -1,46 +1,58 @@
 import { useState } from 'react'
+import { useMutation } from 'react-query'
+import { useNotificationDispatch } from '../context/NotificationContext'
+import { useUserDispatch } from '../context/UserContext'
 import { blogServices } from '../services/blogs'
 import { loginServices } from '../services/login'
 import { Notification } from './Notification'
 
-const Login = ({ setUser, setMessage, message }) => {
+const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const dispatch = useNotificationDispatch()
+  const userDispatch = useUserDispatch()
 
   const handleChange = (e, setState) => {
     setState(e.target.value)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await loginServices.login({ username, password })
-      setUser(response)
-      blogServices.setToken(response.token)
-      window.localStorage.setItem('blogListUser', JSON.stringify(response))
+  const loginMutation = useMutation(loginServices.login, {
+    onSuccess: (res) => {
+      userDispatch({ type: 'LOG_IN', payload: res })
+      blogServices.setToken(res)
+      window.localStorage.setItem('blogListUser', JSON.stringify(res))
 
       setUsername('')
       setPassword('')
-    } catch (error) {
-      setMessage({
-        text: 'Wrong credentials',
-        isError: true,
+    },
+    onError: () => {
+      dispatch({
+        type: 'SHOW',
+        payload: {
+          text: 'Wrong credentials',
+          isError: true,
+        },
       })
-    } finally {
+    },
+    onSettled: () => {
       setTimeout(() => {
-        setMessage({
-          text: '',
-          isError: false,
+        dispatch({
+          type: 'HIDE',
         })
       }, 3000)
-    }
+    },
+  })
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    loginMutation.mutate({ username, password })
   }
 
   return (
     <div>
       <h2>log in to application</h2>
 
-      <Notification message={message} />
+      <Notification />
 
       <form onSubmit={handleSubmit}>
         <div>
