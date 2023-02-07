@@ -43,7 +43,7 @@ describe('Blog app', function () {
     })
 
     it('user can create blog', function () {
-      cy.contains('new blog').click()
+      cy.contains('New blog').click()
       cy.get('input[name="title"]').type('First blog')
       cy.get('input[name="author"]').type('Emi')
       cy.get('input[name="url"]').type('emi.com')
@@ -52,7 +52,7 @@ describe('Blog app', function () {
 
     describe('when a blog exists', function () {
       beforeEach(function () {
-        cy.contains('new blog').click()
+        cy.contains('New blog').click()
         cy.get('input[name="title"]').type('First blog')
         cy.get('input[name="author"]').type('Emi')
         cy.get('input[name="url"]').type('emi.com')
@@ -63,24 +63,14 @@ describe('Blog app', function () {
         cy.contains('added')
       })
 
-      it('can toggle visibility of the blog', function () {
-        cy.contains('view').click()
-      })
-
-      it('can like the blog', function () {
-        cy.contains('view').click()
-        cy.contains('like').click()
-      })
-
       it('can remove a blog', function () {
-        cy.contains('view').click()
-        cy.contains('remove').click()
+        cy.contains('Remove').click()
         cy.contains('removed succesfully')
       })
 
       // eslint-disable-next-line quotes
       it("can't remove a blog from another user", function () {
-        cy.contains('logout').click()
+        cy.contains('Logout').click()
         cy.contains('log in').click()
 
         const newUser = {
@@ -93,21 +83,21 @@ describe('Blog app', function () {
         cy.get('#username').type('charlie95')
         cy.get('#password').type('charliepassword')
         cy.get('#login-button').click()
-        cy.contains('view').click()
-        cy.contains('remove').click()
+        cy.contains('Remove').click()
         cy.contains('You are not allowed to remove this blog').click()
       })
 
       it('blogs are orderer by most likes', function () {
-        cy.contains('new blog').click()
+        cy.contains('New blog').click()
         cy.get('input[name="title"]').type('Second blog')
         cy.get('input[name="author"]').type('Emi')
         cy.get('input[name="url"]').type('emi.com')
         cy.get('#create-blog-button').click()
 
-        cy.get('.blog').eq(1).find('#view-button').click()
-        cy.get('#like-button').click().wait(1000).click()
-        cy.get('.blog').eq(0).should('contain', 'Second blog')
+        cy.contains('Second blog Emi').click()
+        cy.contains('like').click().wait(1000).click()
+        cy.contains('Go back').click()
+        cy.get('#blog').eq(0).should('contain', 'Second blog')
       })
     })
   })
