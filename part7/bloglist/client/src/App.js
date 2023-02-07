@@ -10,6 +10,10 @@ import { sortByLikes } from './helpers/sortByLikes'
 import { useNotificationDispatch } from './context/NotificationContext'
 import { useUserDispatch, useUserValue } from './context/UserContext'
 import './index.css'
+import { Route, Routes } from 'react-router-dom'
+import Users from './components/Users'
+import UserDetail from './components/UserDetail'
+import BlogDetail from './components/BlogDetail'
 
 const App = () => {
   const dispatch = useNotificationDispatch()
@@ -18,7 +22,7 @@ const App = () => {
   const noteFormRef = useRef()
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery('blogs', blogServices.getAll, {
+  const { data, isLoading, error } = useQuery('blogs', blogServices.getAll, {
     refetchOnWindowFocus: false,
   })
 
@@ -88,6 +92,11 @@ const App = () => {
     )
   }
 
+  if (error) {
+    console.log(error)
+    return 'There was an error'
+  }
+
   return (
     <div>
       <h1>Bloglist app</h1>
@@ -97,15 +106,30 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
 
-      <Notification />
+      <Routes>
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<UserDetail />} />
+        <Route
+          path="/blogs/:id"
+          element={<BlogDetail handleLike={handleLike} blogs={data} />}
+        />
+        <Route
+          path="/"
+          element={
+            <>
+              <Notification />
 
-      <Togglable buttonLabel="new blog" ref={noteFormRef}>
-        <BlogForm createBlog={createBlog} />
-      </Togglable>
+              <Togglable buttonLabel="new blog" ref={noteFormRef}>
+                <BlogForm createBlog={createBlog} />
+              </Togglable>
 
-      {sortByLikes(data).map((blog) => (
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
-      ))}
+              {sortByLikes(data).map((blog) => (
+                <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+              ))}
+            </>
+          }
+        />
+      </Routes>
     </div>
   )
 }
