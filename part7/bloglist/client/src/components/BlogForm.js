@@ -29,8 +29,8 @@ const BlogForm = ({ createBlog }) => {
   }
 
   return (
-    <form onSubmit={handleCreate}>
-      <h2>create new</h2>
+    <form onSubmit={handleCreate} className="flex flex-col gap-4">
+      <h2 className="text-2xl">Create new</h2>
 
       <div>
         title:
@@ -39,6 +39,7 @@ const BlogForm = ({ createBlog }) => {
           aria-label="title"
           name="title"
           value={blogInput.title}
+          className="border ml-2 rounded-md px-2"
         />
       </div>
       <div>
@@ -48,6 +49,7 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleChange}
           name="author"
           value={blogInput.author}
+          className="border ml-2 rounded-md px-2"
         />
       </div>
       <div>
@@ -57,11 +59,16 @@ const BlogForm = ({ createBlog }) => {
           onChange={handleChange}
           name="url"
           value={blogInput.url}
+          className="border ml-2 rounded-md px-2"
         />
       </div>
 
-      <button id="create-blog-button" type="submit">
-        create
+      <button
+        className="bg-yellow-400 rounded-md py-1 px-4 max-w-[100px]"
+        id="create-blog-button"
+        type="submit"
+      >
+        Create
       </button>
     </form>
   )

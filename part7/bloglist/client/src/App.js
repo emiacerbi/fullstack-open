@@ -24,6 +24,7 @@ const App = () => {
 
   const { data, isLoading, error } = useQuery('blogs', blogServices.getAll, {
     refetchOnWindowFocus: false,
+    retry: false,
   })
 
   const updateMutation = useMutation(blogServices.update, {
@@ -83,8 +84,8 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
-        <h1>Bloglist app</h1>
+      <div className={'p-4'}>
+        <h1 className="text-3xl font-bold">Bloglist app</h1>
         <Togglable buttonLabel="log in">
           <Login />
         </Togglable>
@@ -94,16 +95,27 @@ const App = () => {
 
   if (error) {
     console.log(error)
-    return 'There was an error'
+    return (
+      <div className="p-4">
+        <h2 className="text-2xl text-red-400 text-center">
+          There was an error
+        </h2>
+      </div>
+    )
   }
 
   return (
-    <div>
-      <h1>Bloglist app</h1>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold">Bloglist app</h1>
 
-      <div>
+      <div className="flex items-center mt-2">
         <span>{user.name} logged in</span>{' '}
-        <button onClick={handleLogout}>logout</button>
+        <button
+          className="bg-blue-300 rounded-md px-4 py-1 ml-auto"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
 
       <Routes>
@@ -119,13 +131,15 @@ const App = () => {
             <>
               <Notification />
 
-              <Togglable buttonLabel="new blog" ref={noteFormRef}>
+              <Togglable buttonLabel="New blog" ref={noteFormRef}>
                 <BlogForm createBlog={createBlog} />
               </Togglable>
 
-              {sortByLikes(data).map((blog) => (
-                <Blog key={blog.id} blog={blog} handleLike={handleLike} />
-              ))}
+              <div className="mt-4 flex flex-col gap-4">
+                {sortByLikes(data).map((blog) => (
+                  <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+                ))}
+              </div>
             </>
           }
         />

@@ -13,6 +13,9 @@ const BlogDetail = ({ blogs, handleLike }) => {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs')
     },
+    onError: (res) => {
+      console.error(res)
+    },
   })
 
   const handleChange = (e) => {
@@ -30,31 +33,52 @@ const BlogDetail = ({ blogs, handleLike }) => {
   if (!blog) return <h2>That blog doesn&apos;t exist</h2>
 
   return (
-    <div>
-      <h2>{blog.title}</h2>
-      <a href={blog.url}>{blog.url}</a>
+    <div className="mt-4">
+      <h2 className="text-2xl font-bold">{blog.title}</h2>
+      <a className="text-blue-400" href={blog.url}>
+        {blog.url}
+      </a>
       <div>
         likes {blog.likes}{' '}
-        <button onClick={() => handleLike(blog)}>like</button>
+        <button
+          className="bg-amber-400 rounded-md py-1 px-4"
+          onClick={() => handleLike(blog)}
+        >
+          like
+        </button>
       </div>
       <div>added by {blog.author}</div>
 
-      <form onSubmit={handleSubmit}>
-        <h3>comments</h3>
+      <form onSubmit={handleSubmit} className="mt-4">
+        <h3>Comments</h3>
 
-        <input value={commentInput} onChange={handleChange} />
-        <button>add comment</button>
+        <input
+          value={commentInput}
+          className="border py-1 px-2 rounded-md mt-2"
+          onChange={handleChange}
+        />
+        <button
+          disabled={commentMutation.isLoading}
+          className="bg-purple-400 ml-2 py-1 px-4 rounded-md"
+        >
+          {commentMutation.isLoading ? 'Loading' : 'Add comment'}
+        </button>
       </form>
 
       {blog.comments.length > 0 && (
-        <ul>
+        <ul className="list-disc flex flex-col gap-2 pl-4 mt-2">
           {blog.comments.map((comment) => (
             <li key={comment}>{comment}</li>
           ))}
         </ul>
       )}
 
-      <button onClick={() => navigate('/')}>Go back</button>
+      <button
+        className="bg-green-400 rounded-md py-1 px-4 mt-4"
+        onClick={() => navigate('/')}
+      >
+        Go back
+      </button>
     </div>
   )
 }

@@ -19,7 +19,7 @@ const Login = () => {
   const loginMutation = useMutation(loginServices.login, {
     onSuccess: (res) => {
       userDispatch({ type: 'LOG_IN', payload: res })
-      blogServices.setToken(res)
+      blogServices.setToken(res.token)
       window.localStorage.setItem('blogListUser', JSON.stringify(res))
 
       setUsername('')
@@ -57,14 +57,26 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <div>
           username
-          <input id="username" onChange={(e) => handleChange(e, setUsername)} />
+          <input
+            id="username"
+            className="border rounded-md ml-2 mt-2 px-2"
+            onChange={(e) => handleChange(e, setUsername)}
+          />
         </div>
         <div>
           password
-          <input id="password" onChange={(e) => handleChange(e, setPassword)} />
+          <input
+            id="password"
+            className="border rounded-md ml-2 mt-2 px-2"
+            onChange={(e) => handleChange(e, setPassword)}
+          />
         </div>
 
-        <button id="login-button" type="submit">
+        <button
+          className="bg-amber-400 rounded-md px-4 py-1 mt-2 min-w-[100px]"
+          id="login-button"
+          type="submit"
+        >
           login
         </button>
       </form>

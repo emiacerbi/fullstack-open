@@ -44,22 +44,19 @@ const Blog = ({ blog }) => {
     }
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
   return (
-    <div style={blogStyle}>
-      <div className="blog">
-        <Link to={`blogs/${blog.id}`}>
+    <div id="blog" className="border p-4 rounded-md">
+      <div className="flex items-center">
+        <Link to={`blogs/${blog.id}`} className="text-blue-500">
           <span>{blog.title}</span>
-          <span> {blog.author} </span>
+          <span className="text-orange-400"> {blog.author} </span>
         </Link>
-        <button onClick={() => handleRemove(blog.id)}>remove</button>
+        <button
+          className="bg-red-400 rounded-md px-4 py-1 ml-auto"
+          onClick={() => handleRemove(blog.id)}
+        >
+          Remove
+        </button>
       </div>
     </div>
   )
