@@ -160,6 +160,8 @@ const resolvers = {
         console.log(args.genre)
         return books.filter((book) => book.genres.includes(args.genre))
       }
+
+      return books
     },
     allAuthors: () => authors,
   },
