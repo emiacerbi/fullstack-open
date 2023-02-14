@@ -4,7 +4,7 @@ import { EDIT_AUTHOR } from '../mutations'
 import { ALL_AUTHORS } from '../queries'
 
 const Authors = ({ show }) => {
-  const { data } = useQuery(ALL_AUTHORS)
+  const { data, loading } = useQuery(ALL_AUTHORS)
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
   })
@@ -25,6 +25,10 @@ const Authors = ({ show }) => {
 
   if (!show) {
     return null
+  }
+
+  if (loading) {
+    return <div>Loading, please wait...</div>
   }
 
   return (

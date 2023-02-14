@@ -131,12 +131,24 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: async (root, args) => {
-      const author = new Author({
-        name: args.author,
-      })
+    addBook: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('Permission error', {
+          extensions: {
+            code: 'AUTH',
+          },
+        })
+      }
 
-      const book = new Book({ ...args })
+      let author = await Author.findOne({ name: args.author })
+
+      if (!author) {
+        author = new Author({
+          name: args.author,
+        })
+      }
+
+      const book = new Book({ ...args, author })
 
       try {
         await author.save()
@@ -151,11 +163,21 @@ const resolvers = {
         })
       }
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('Permission error', {
+          extensions: {
+            code: 'AUTH',
+          },
+        })
+      }
+
       try {
         const author = await Author.findOne({ name: args.name })
         if (!author) return null
-        author.born = args.setBorn
+
+        author.born = args.setBornTo
+
         await author.save()
         return author
       } catch (error) {
@@ -213,7 +235,7 @@ startStandaloneServer(server, {
     if (auth && auth.startsWith('Bearer ')) {
       const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET)
       const currentUser = await User.findById(decodedToken.id)
-      return currentUser
+      return { currentUser }
     }
   },
 }).then(({ url }) => {
