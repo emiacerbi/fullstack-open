@@ -1,6 +1,8 @@
-import { useQuery } from '@apollo/client'
-import { useState } from 'react'
-import { ALL_BOOKS } from '../queries'
+import { useApolloClient, useQuery, useSubscription } from '@apollo/client'
+import { useEffect, useState } from 'react'
+import { updateCache } from '../App'
+import { timer } from '../helpers/timer'
+import { ALL_BOOKS, BOOK_ADDED } from '../queries'
 
 const filters = [
   'all genres',
@@ -13,24 +15,42 @@ const filters = [
   'Epic',
 ]
 
-const Books = ({ show }) => {
-  const { data } = useQuery(ALL_BOOKS)
-  const [genre, setGenre] = useState(filters[0])
+const Books = ({ show, setNotification }) => {
+  const client = useApolloClient()
+  const [genre, setGenre] = useState(null)
+  const { data, refetch } = useQuery(ALL_BOOKS)
+
+  const handleFilterChange = (filter) => {
+    setGenre(filter)
+    if (filter === 'all genres') {
+      setGenre(null)
+      return
+    }
+  }
+
+  useEffect(() => {
+    refetch({ genre })
+  }, [genre])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      setNotification(`${addedBook.title} added to the booklist!`)
+      timer(() => setNotification(''), 3000)
+    },
+  })
 
   if (!show) {
     return null
   }
-
-  const filteredBooks = data?.allBooks.filter(
-    (book) => book.genres.includes(genre) || genre === 'all genres'
-  )
 
   return (
     <div>
       <h2>books</h2>
 
       <p>
-        in genre <b>{genre}</b>
+        in genre <b>{genre || 'all genres'}</b>
       </p>
 
       <table>
@@ -40,7 +60,8 @@ const Books = ({ show }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks.map((a) => (
+
+          {data?.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -51,7 +72,7 @@ const Books = ({ show }) => {
       </table>
 
       {filters.map((filter) => (
-        <button onClick={() => setGenre(filter)} key={filter}>
+        <button onClick={() => handleFilterChange(filter)} key={filter}>
           {filter}
         </button>
       ))}
