@@ -1,4 +1,4 @@
-const calculateExercise = (array: number[], target: number) => {
+export const calculateExercise = (array: number[], target: number) => {
   if (isNaN(target)) throw new Error('Target must be a number')
 
   array.forEach((element) => {
