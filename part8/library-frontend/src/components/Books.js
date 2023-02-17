@@ -1,5 +1,5 @@
 import { useApolloClient, useQuery, useSubscription } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { updateCache } from '../App'
 import { timer } from '../helpers/timer'
 import { ALL_BOOKS, BOOK_ADDED } from '../queries'
@@ -18,7 +18,7 @@ const filters = [
 const Books = ({ show, setNotification }) => {
   const client = useApolloClient()
   const [genre, setGenre] = useState(null)
-  const { data, refetch } = useQuery(ALL_BOOKS)
+  const { data } = useQuery(ALL_BOOKS)
 
   const handleFilterChange = (filter) => {
     setGenre(filter)
@@ -28,9 +28,9 @@ const Books = ({ show, setNotification }) => {
     }
   }
 
-  useEffect(() => {
-    refetch({ genre })
-  }, [genre])
+  // useEffect(() => {
+  //   refetch({ genre })
+  // }, [genre])
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
