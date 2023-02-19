@@ -19,17 +19,17 @@ export const calculateBmi = (height: number, weight: number): string => {
   );
 };
 
-const height = Number(process.argv[2]);
-const weight = Number(process.argv[3]);
+// const height = Number(process.argv[2]);
+// const weight = Number(process.argv[3]);
 
-try {
-  console.log(calculateBmi(height, weight));
-} catch (error) {
-  let errorMessage = 'Something went wrong: ';
+// try {
+//   console.log(calculateBmi(height, weight));
+// } catch (error) {
+//   let errorMessage = 'Something went wrong: ';
 
-  if (error instanceof Error) {
-    errorMessage += error.message;
-  }
+//   if (error instanceof Error) {
+//     errorMessage += error.message;
+//   }
 
-  console.log(errorMessage);
-}
+//   console.log(errorMessage);
+// }

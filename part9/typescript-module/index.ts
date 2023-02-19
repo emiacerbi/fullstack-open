@@ -1,9 +1,8 @@
 import express from 'express';
-import { calculateBmi } from './bmiCalculator';
-// import { calculateExercise } from './exerciseCalculator';
 const app = express();
-import bp from 'body-parser';
+import { calculateBmi } from './bmiCalculator';
 import { calculateExercise } from './exerciseCalculator';
+import bp from 'body-parser';
 
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));

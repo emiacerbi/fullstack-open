@@ -1,5 +1,15 @@
 export const calculateExercise = (array: number[], target: number) => {
-  if (isNaN(target)) throw new Error('Target must be a number');
+  if (isNaN(target)) {
+    throw new Error('Target must be a number');
+  }
+
+  if (!array) {
+    throw new Error('Array missing');
+  }
+
+  if (!target) {
+    throw new Error('Target missing');
+  }
 
   array.forEach((element) => {
     if (isNaN(element)) {
@@ -43,17 +53,17 @@ export const calculateExercise = (array: number[], target: number) => {
   };
 };
 
-const target = Number(process.argv[2]);
-const array = [...process.argv].slice(3).map((el) => Number(el));
+// const target = Number(process.argv[2]);
+// const array = [...process.argv].slice(3).map((el) => Number(el));
 
-try {
-  console.log(calculateExercise(array, target));
-} catch (error) {
-  let errorMessage = 'Something went wrong: ';
+// try {
+//   console.log(calculateExercise(array, target));
+// } catch (error) {
+//   let errorMessage = 'Something went wrong: ';
 
-  if (error instanceof Error) {
-    errorMessage += error.message;
-  }
+//   if (error instanceof Error) {
+//     errorMessage += error.message;
+//   }
 
-  console.log(errorMessage);
-}
+//   console.log(errorMessage);
+// }
