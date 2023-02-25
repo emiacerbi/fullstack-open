@@ -5,7 +5,8 @@ import { Patient } from '../../types';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Stack } from '@mui/material';
+import EntryDetails from '../EntryDetails';
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -38,15 +39,29 @@ const PatientPage = () => {
     return <CircularProgress />;
   }
 
+  if (!patient) {
+    return <p>No patient found</p>;
+  }
+
   return (
     <div>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <h2>{patient?.name}</h2>
+        <h2>{patient.name}</h2>
         <div>{icon}</div>
       </Box>
 
-      <p>ssn: {patient?.ssn}</p>
-      <p>ocupation: {patient?.occupation}</p>
+      <p>ssn: {patient.ssn}</p>
+      <p>ocupation: {patient.occupation}</p>
+
+      <h3>entries</h3>
+
+      {patient.entries.length === 0 && <p>No entries for this user</p>}
+
+      <Stack sx={{ gap: '1rem' }}>
+        {patient.entries.map((entry) => (
+          <EntryDetails entry={entry} key={entry.id} />
+        ))}
+      </Stack>
     </div>
   );
 };
