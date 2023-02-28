@@ -133,13 +133,13 @@ export const toNewEntry = (entry: unknown): NewEntryWithoutId => {
           };
 
           if (entry.diagnosisCodes) {
-            newEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+            newEntry.diagnosisCodes = parseDiagnosisCodes(entry);
           }
 
           return newEntry;
         }
 
-        throw new Error('Missing healthheck rating in ' + +entry);
+        throw new Error('Missing healthheck rating in ' + entry.type);
       }
 
       case 'OccupationalHealthcare': {
@@ -153,13 +153,13 @@ export const toNewEntry = (entry: unknown): NewEntryWithoutId => {
           };
 
           if (entry.diagnosisCodes) {
-            newEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+            newEntry.diagnosisCodes = parseDiagnosisCodes(entry);
           }
 
           return newEntry;
         }
 
-        throw new Error('Missing employer name in ' + entry);
+        throw new Error('Missing employer name in ' + entry.type);
       }
 
       case 'Hospital': {
@@ -173,13 +173,13 @@ export const toNewEntry = (entry: unknown): NewEntryWithoutId => {
           };
 
           if (entry.diagnosisCodes) {
-            newEntry.diagnosisCodes = parseDiagnosisCodes(entry.diagnosisCodes);
+            newEntry.diagnosisCodes = parseDiagnosisCodes(entry);
           }
 
           return newEntry;
         }
 
-        throw new Error('Missing discharge in ' + entry);
+        throw new Error('Missing discharge in ' + entry.type);
       }
 
       default:

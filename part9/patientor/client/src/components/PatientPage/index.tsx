@@ -5,12 +5,14 @@ import { Patient } from '../../types';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import { Box, CircularProgress, Stack } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import EntryDetails from '../EntryDetails';
+import EntryForm from '../EntryForm';
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(true);
   const { id } = useParams();
 
   useEffect(() => {
@@ -23,8 +25,6 @@ const PatientPage = () => {
         .finally(() => setLoading(false));
     }
   }, []);
-
-  console.log(patient);
 
   const icon =
     patient?.gender === 'male' ? (
@@ -52,6 +52,18 @@ const PatientPage = () => {
 
       <p>ssn: {patient.ssn}</p>
       <p>ocupation: {patient.occupation}</p>
+
+      {isFormVisible ? (
+        <EntryForm setIsFormVisible={setIsFormVisible} />
+      ) : (
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => setIsFormVisible(true)}
+        >
+          New entry
+        </Button>
+      )}
 
       <h3>entries</h3>
 

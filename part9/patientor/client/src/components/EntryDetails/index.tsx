@@ -57,10 +57,10 @@ const HealthCheck = ({ entry }: { entry: HealthCheckEntry }) => {
   const icon = getIcon(entry.type);
 
   const colorObj = {
-    0: 'blue',
-    1: 'green',
-    2: 'yellow',
-    3: 'red',
+    Healthy: 'blue',
+    LowRisk: 'green',
+    HighRisk: 'yellow',
+    CriticalRisk: 'red',
   };
 
   const iconColor = colorObj[entry.healthCheckRating];
