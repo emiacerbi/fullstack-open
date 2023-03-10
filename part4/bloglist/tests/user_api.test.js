@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const { usersInDb } = require('./test_helper')
 const app = require('../app')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
 
 const api = supertest(app)
 
@@ -58,4 +59,8 @@ describe('when there is initially one user in db', () => {
     const usersAtEnd = await usersInDb()
     expect(usersAtEnd).toEqual(usersAtStart)
   })
+})
+
+afterAll(() => {
+  mongoose.connection.close()
 })
