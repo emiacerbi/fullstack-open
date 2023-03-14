@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react'
 import { Filter } from './components/Filter'
 import { Persons } from './components/Persons'
 import { PersonForm } from './components/PersonForm'
-import axios from 'axios'
-import { createPerson, updatePerson } from './services/persons'
+import { personService } from './services/persons'
 import { Notification } from './components/Notification'
 import './index.css'
-
-const BASE_URL = 'http://localhost:3001/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -20,9 +17,9 @@ const App = () => {
   })
 
   const fetchPersons = () => {
-    axios
-      .get(BASE_URL)
-      .then((res) => setPersons(res.data))
+    personService
+      .getAll()
+      .then((res) => setPersons(res))
       .catch((error) => console.log(error))
   }
 
@@ -63,7 +60,8 @@ const App = () => {
           number: newNumber,
         }
 
-        updatePerson(duplicatedPerson.id, updatedPerson)
+        personService
+          .update(duplicatedPerson.id, updatedPerson)
           .then(() => {
             setMessage({
               text: `Edited ${newName}`,
@@ -88,10 +86,11 @@ const App = () => {
       }
     }
 
-    createPerson({
-      name: newName,
-      number: newNumber,
-    })
+    personService
+      .create({
+        name: newName,
+        number: newNumber,
+      })
       .then(() => {
         setMessage({
           text: `Added ${newName}`,

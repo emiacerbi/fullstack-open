@@ -1,9 +1,10 @@
-import { deletePerson } from '../services/persons'
+import { personService } from '../services/persons'
 
 export const Persons = ({ persons, filterInput, fetchPersons, setMessage }) => {
   const handleClick = (id, name) => {
     if (window.confirm(`Do you really want to delete ${name}?`)) {
-      deletePerson(id)
+      personService
+        .remove(id)
         .then(() => {
           setMessage({
             text: `${name} was deleted from the list`,
