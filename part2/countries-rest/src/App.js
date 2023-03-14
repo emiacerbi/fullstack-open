@@ -20,12 +20,21 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (filteredCountries.length === 1) {
-      const filteredCountry = filteredCountries[0]
+    const filteredCountry = filteredCountries[0]
+
+    if (filteredCountries.length === 1 && !shownCountry) {
       setShownCountry(filteredCountry)
       getCountryWeather(filteredCountry.latlng[0], filteredCountry.latlng[1])
+    } else if (filteredCountries.length === 1 && shownCountry) {
+      setShownCountry(filteredCountry)
     }
-  }, [filteredCountries])
+  }, [filteredCountries, shownCountry])
+
+  useEffect(() => {
+    if (shownCountry) {
+      getCountryWeather(shownCountry.latlng[0], shownCountry.latlng[1])
+    }
+  }, [shownCountry])
 
   const getCountryWeather = (lat, lon) => {
     axios
