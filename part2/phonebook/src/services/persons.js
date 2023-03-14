@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:3001/api/persons'
+const BASE_URL = 'http://localhost:3001/persons'
 
 const deletePerson = (id) => {
   const request = axios.delete(`${BASE_URL}/${id}`)

@@ -7,7 +7,7 @@ import { createPerson, updatePerson } from './services/persons'
 import { Notification } from './components/Notification'
 import './index.css'
 
-const BASE_URL = 'http://localhost:3001/api/persons'
+const BASE_URL = 'http://localhost:3001/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
