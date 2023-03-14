@@ -1,0 +1,6 @@
+[submodule "part11/full-stack-open-pokedex"]
+	path = part11/full-stack-open-pokedex
+	url = https://github.com/emiacerbi/full-stack-open-pokedex
+[submodule "part11/pipeline-project"]
+	path = part11/pipeline-project
+	url = https://github.com/emiacerbi/pipeline-project
