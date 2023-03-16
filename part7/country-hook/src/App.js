@@ -24,7 +24,9 @@ function App() {
             alt={`flag of ${searchedCountry.name.common}`}
           />
         </div>
-      ) : null}
+      ) : (
+        <p>No countries yet...</p>
+      )}
     </div>
   )
 }
